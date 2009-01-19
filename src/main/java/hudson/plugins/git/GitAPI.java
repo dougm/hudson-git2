@@ -38,8 +38,16 @@ public class GitAPI {
 	}
 
 	public String revParse(String revName) throws InterruptedException, IOException {
+		return this.revParse(revName, false);
+	}
+
+	public String revParse(String revName, boolean useShort) throws InterruptedException, IOException {
 		ArgumentListBuilder args = new ArgumentListBuilder();
-		args.add(this.gitExe, "rev-parse", revName.replace(' ', '_'));
+		args.add(this.gitExe, "rev-parse");
+		if (useShort) {
+			args.add("--short");
+		}
+		args.add(revName.replace(' ', '_'));
 
 		ByteArrayOutputStream fos = new ByteArrayOutputStream();
 		int code = this.launcher.launch(args.toCommandArray(), this.createEnvVarMap(), fos, this.workspace).join();

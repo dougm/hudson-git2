@@ -19,6 +19,7 @@ import hudson.util.FormFieldValidator;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 
@@ -214,4 +215,17 @@ public class GitSCM extends SCM implements Serializable {
 		return p;
 	}
 
+	public void buildEnvVars(AbstractBuild build, Map<String, String> env) {
+		super.buildEnvVars(build, env);
+		GitAPI git = new GitAPI(this.getDescriptor(), Hudson.getInstance().createLauncher(TaskListener.NULL), build
+				.getProject().getWorkspace(), TaskListener.NULL);
+		try {
+			String rev = git.revParse(this.getRemoteBranch());
+			env.put("GIT_REVISION", rev);
+			rev = git.revParse(this.getRemoteBranch(), true);
+			env.put("GIT_REVISION_SHORT", rev);
+		} catch (Exception e) {
+
+		}
+	}
 }
